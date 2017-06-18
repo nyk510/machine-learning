@@ -58,8 +58,8 @@ if __name__ == '__main__':
     nu = np.ones(2)
     covariance = np.array([[0.5, 0.5], [0.5, 3]])
 
-    # la:   固有値
-    # v:    固有ベクトル
+    # eig_values: 固有値
+    # eig_vectors: 固有ベクトル
     eig_values, eig_vectors = np.linalg.eig(covariance)
     average_eigs = np.average(eig_values)
     sample = gibbs_sampling(nu, covariance, 1000)
@@ -71,6 +71,7 @@ if __name__ == '__main__':
                 )
 
     # 答え合わせ
+    # scipy.stats を用いて多次元ガウス分布の確率密度関数を計算
     multi_norm = stats.multivariate_normal(mean=nu, cov=covariance)
     X, Y = np.meshgrid(np.linspace(nu[0] - average_eigs * 2, nu[0] + average_eigs * 2, 100),
                        np.linspace(nu[1] - average_eigs * 2, nu[1] + average_eigs * 2, 100))
