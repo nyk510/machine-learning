@@ -1,22 +1,29 @@
 # Machine Learning
 
 機械学習に関する python ファイルをまとめていくリポジトリ.
-基本的に Deep Learning には属さない機械学習algorithmの実装を追加していく予定です。
 
 ## 環境
 
 * python 3.5
 
+## requirements
+
+* numpy
+* scipy
+* scikit-learn
+* matplotlib
+* seaborn
+
 ## Contents
 
-### 一般
+### サンプリング
 
 * [gibbs sampling による多次元ガウス分布のサンプリング](gibbs_sampling.py)
 
 ### PRML
 
-* [Gaussian Process](./prml/em_algorithm.py)
-* [EM Algorithm](./prml/6-4_gaussian-process.py)
+* [Gaussian Process](./prml/6-4_gaussian-process.py)
+* [EM Algorithm](./prml/em_algorithm.py)
 * [Variance Inference](./prml/variance_inference.py)
 
 ### その他

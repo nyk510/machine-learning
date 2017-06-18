@@ -17,6 +17,7 @@ def gibbs_sampling(nu, cov, sample_size):
     :param np.ndarray cov: 共分散
     :param int sample_size: サンプリングする数
     :return:
+    :rtype: np.ndarray
     """
     samples = []
     n_dim = nu.shape[0]
@@ -28,7 +29,7 @@ def gibbs_sampling(nu, cov, sample_size):
     for i in range(sample_size):
         if search_dim == n_dim - 1:
             """
-            search dimension selection is cyclic. 
+            search dimension selection is cyclic.
             it can be replaced random choice.
             """
             search_dim = 0
