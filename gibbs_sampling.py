@@ -79,7 +79,8 @@ if __name__ == '__main__':
     Pos[:, :, 0] = X
     Pos[:, :, 1] = Y
     Z = multi_norm.pdf(Pos)
-    ax1.contour(X, Y, Z, colors="C0")
+    ax1.contour(X, Y, Z, colors="C0", label="True Probability Density Function")
     ax1.legend()
+    ax1.set_title("Gibbs Sampling")
     fig.tight_layout()
     fig.savefig("gibbs_sampling.png", dpi=150)
