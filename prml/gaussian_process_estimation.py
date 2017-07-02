@@ -1,6 +1,6 @@
 # coding: utf-8
 """
-write about this python script
+ガウス過程による予測を行うスクリプト
 """
 
 __author__ = "nyk510"
@@ -62,8 +62,10 @@ class GaussianProcess(object):
 
         C = np.array(C)
         print(C.shape)
-        # ここがガウスカーネルのボトルネック:O(N^3)
+
+        # ここがガウス過程での予測のボトルネック: O(N^3)
         self.C_n_inv = np.linalg.inv(np.array(C) + np.eye(len(X)) * self.beta)
+
         return
 
     def predict(self, x):
@@ -76,6 +78,7 @@ class GaussianProcess(object):
         """
 
         k = []
+
         # fitに使用したデータとのカーネルを計算
         for x_i in self.X:
             k.append(self.kernel(x, x_i))
