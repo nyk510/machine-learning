@@ -22,10 +22,14 @@
 
 ### PRML
 
-* [Gaussian Process](./prml/6-4_gaussian-process.py)
+* [カーネル密度推定](./prml/density_estimation.py)
+* ガウス過程 (Gaussian Process)
+    * [事前分布](./prml/gaussian_process_prior.py)
+    * [新しいデータに対する予測](./prml/gaussian_process_estimation.py)
+* [RVM (Relevant Vector Machine)](./prml/rvm.py)
 * [EM Algorithm](./prml/em_algorithm.py)
 * [Variance Inference](./prml/variance_inference.py)
 
 ### その他
 
-* [black sholes 方程式](black_sholes.py)
+* [black sholes 方程式](./black_scholes.py)
