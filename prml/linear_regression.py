@@ -35,15 +35,9 @@ class LinearRegression(object):
         t = np.array(t)
         N = len(t)
         dim_w = len(Phi[0])
-        print
-        N, ": data dimention"
-        print
-        dim_w, ": w dimention"
         # 計画行列の固有値計算を先にしておきます
         self.eigenvalues = np.linalg.eig(Phi.T.dot(Phi))[0]
         self.eigenvalues[np.abs(self.eigenvalues) < .0001] = 0.  # 情報量が小さい次元の固有値はすべて0だと思うことにする。
-        print
-        u"Eig", self.eigenvalues
         # alphaとbetaを格納する為のリストを用意
         # note:最初はpythonのリストで計算してあとでnumpy.arrayにしたほうが早い！
         alphas = []
@@ -97,24 +91,21 @@ def compute_polynominal_matrix(X, dimentions):
 
 def compute_gaussian_phi(X, dim=10, s=1.):
     """
-    ガウス基底に基づく特徴量matrixを返します
-    固定基底なので、データ点によらず、-pi~+piまでを、dimの数で区切ってその点との距離をガウス基底で計算します。
-        ここがRBFと異なる点. 
-        RVM (Relevant Vector Machin) や、ガウス過程では、固定基底を通さずに内積のみを計算する. 
-    X: numpy.ndarray 元になるxの値
-    dim: ガウス基底の次元数
-    s: ガウス基底の分散パラメータ
+    ガウス固定基底に基づく特徴量matrixを返します.
+    固定規定の基準点は [-pi, pi] を dim の数で区切った点.
+    :param np.ndarray X:
+        変換する特徴量. shape = (n_samples, )
+
+    :param int dim: ガウス基底の次元数
+    :param float s: ガウス基底の分散パラメータ
         大きいと分布がゆるやかになります
         要するに、予測分布が遠いデータ点の情報も参照する用になります
     """
-    Phi = [np.ones_like(X)]
-    start = -np.pi
-    dist = 2. * np.pi
-    for i in range(dim):
-        print
-        X - start - dist / (dim - 1)
-        Phi.append(np.exp(-(X - start - dist / (dim - 1) * i) ** 2 / (2. * s * s)))
-    return np.array(Phi).T
+    bins = np.linspace(-np.pi, np.pi, num=dim).reshape(1, -1)
+    X = X.reshape(-1, 1)
+    dist = X - bins
+    phi = np.exp(- dist ** 2. / (2 * s ** 2.))
+    return np.hstack((phi, np.ones_like(X)))
 
 
 if __name__ == '__main__':
@@ -163,18 +154,18 @@ if __name__ == '__main__':
     fig1.savefig("../figures/linear_regression_max-evidence_vs_normal-map.png", dpi=150)
     plt.show()
 
-        # # 係数wの大きさの変化を表示する
-        # # ax3 = axes[0,1]
-        # # for i in range(len(model.w[0])):
-        # #     ax3.plot(range(len(model.w[:,i])),np.abs(model.w[:,i]),"o-",alpha=.3)
-        # sns.heatmap(model.w, ax=axes[0, 1])
-        # axes[0, 1].set_ylabel('Iteration')
-        # axes[0, 1].set_xlabel('dimention')
-        # # Gammaの推移をプロットします
-        # ax4 = axes[1, 1]
-        # ax4.plot(range(len(model.gam)), model.gam, "-o", label="Gamma")
-        # ax4.set_xlabel('Iteration')
-        # ax4.legend(loc=1)
-        # plt.tight_layout()
-        # # plt.savefig('python_study/prml/linear_regression/normalmap_and_evidence.png', dpi=120)
-        # plt.show()
+    # # 係数wの大きさの変化を表示する
+    # # ax3 = axes[0,1]
+    # # for i in range(len(model.w[0])):
+    # #     ax3.plot(range(len(model.w[:,i])),np.abs(model.w[:,i]),"o-",alpha=.3)
+    # sns.heatmap(model.w, ax=axes[0, 1])
+    # axes[0, 1].set_ylabel('Iteration')
+    # axes[0, 1].set_xlabel('dimention')
+    # # Gammaの推移をプロットします
+    # ax4 = axes[1, 1]
+    # ax4.plot(range(len(model.gam)), model.gam, "-o", label="Gamma")
+    # ax4.set_xlabel('Iteration')
+    # ax4.legend(loc=1)
+    # plt.tight_layout()
+    # # plt.savefig('python_study/prml/linear_regression/normalmap_and_evidence.png', dpi=120)
+    # plt.show()

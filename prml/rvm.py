@@ -102,7 +102,7 @@ class RVM(object):
         :param float min_max_ratio:  サポートベクトルの信頼度の割合
         """
 
-        alpha = self.alphas[-1][2::]
+        alpha = self.alphas[-1][1::]
         min_alpha = min(alpha)
         upper_limit = min_alpha / min_max_ratio
         support_X = self.X[alpha < upper_limit]
@@ -145,7 +145,7 @@ if __name__ == '__main__':
     ax1.legend()
     ax1.set_xlim(min(X1), max(X1))
     ax1.set_title(str(rvm))
-    fig.savefig("rvm_predict.png", dpi=150)
+    fig.savefig("../figures/rvm_predict.png", dpi=150)
 
     fig = plt.figure(figsize=(6, 6))
     ax1 = fig.add_subplot(111)
