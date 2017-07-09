@@ -71,9 +71,9 @@ if __name__ == '__main__':
     ax1.hist(samples, normed=True, facecolor='C0', alpha=0.3)
 
     for h in np.logspace(-1., .5, num=5):
-        kernel = KernelEstimation(h, 1., "gaussian")
-        kernel.fit(samples)
-        preds = kernel.predict(x)
-        ax1.plot(x, preds, "--", label=str(kernel))
+        model = KernelEstimation(h, 1., "gaussian")
+        model.fit(samples)
+        preds = model.predict(x)
+        ax1.plot(x, preds, "--", label=str(model))
         ax1.legend()
     fig.savefig("density_estimation.png", dpi=150)

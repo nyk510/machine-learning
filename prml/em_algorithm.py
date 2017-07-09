@@ -1,12 +1,19 @@
 # coding: utf-8
 __author__ = "nyk510"
 """
-EM algorithm
+EMアルゴリズム
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
+from logging import getLogger, StreamHandler
+
+logger = getLogger(__name__)
+stream_hander = StreamHandler()
+logger.setLevel("INFO")
+stream_hander.setLevel("INFO")
+logger.addHandler(stream_hander)
 
 
 class EMAlgorithm():
@@ -34,6 +41,8 @@ class EMAlgorithm():
             self.nu_list.append(np.random.uniform(low=-1, high=1.0, size=dim))
             self.sigma_list.append(np.eye(dim))
             self.pi_list.append(1. / dim)
+
+        self.n_iter = 0
         self.previous_likelihood = self.compute_log_likelihood()
         self.nu_path = []
 
@@ -62,13 +71,12 @@ class EMAlgorithm():
         for k in range(self.class_num):
             N_k = sum(self.responsibility[:, k])
             N_k_list[k] = N_k
-        # print nk_list,"nk"
+
         # step1 update nu_list
         self.nu_path.append(self.nu_list[:])
         for k in range(self.class_num):
             new_nu = np.zeros(self.n_dimensions)
             for n in range(self.n_samples):
-                # print (self.responsibility[n,k]*self.data[n,:]).shape
                 new_nu += self.responsibility[n, k] * self.features[n, :]
             self.nu_list[k] = new_nu / N_k_list[k]
 
@@ -77,8 +85,6 @@ class EMAlgorithm():
             new_sigma_k = np.zeros((self.n_dimensions, self.n_dimensions))
             for n in range(self.n_samples):
                 array_x = (self.features[n, :] - self.nu_list[k])[:, np.newaxis]  # ベクトルの転置計算のためにいったん行列に変形
-                # print array_x
-                # print array_x.dot(array_x.T)
                 new_sigma_k += self.responsibility[n, k] * array_x.dot(array_x.T)
             self.sigma_list[k] = new_sigma_k / N_k_list[k]
 
@@ -99,7 +105,8 @@ class EMAlgorithm():
                 dense_x = multi_n.pdf(self.features[n])
                 inside_log += dense_x * self.pi_list[k]
             retval += np.log(inside_log)
-        print("loglikelihood: {0:.3f}".format(retval))
+        n_iter = self.n_iter
+        logger.info("log-likelihood: {retval:.3f}\titer: {n_iter}".format(**locals()))
         return retval
 
     @property
@@ -108,27 +115,32 @@ class EMAlgorithm():
         whether the EM algorithm is terminated or not
         return: boolean
         """
-        e = 0.001
+        e = 1e-5
         current_likelihood = self.compute_log_likelihood()
         dist = current_likelihood - self.previous_likelihood
         kaizen_ratio = np.abs(dist / current_likelihood)
-        # print dist, "kaizen"
+
         if kaizen_ratio < e:
-            print("Complete!")
+            logger.info("Complete!")
             return True
         self.previous_likelihood = current_likelihood
         return False
 
-    def run(self, repeat=10):
+    def run(self, repeat=10, force_update=True):
         """
         lunch algorithm
         doing while is_terminated is true or repeat times over setted repeat number
+        :param int repeat: 繰り返し回数
+        :param bool force_update: 更新を強制的に繰り返し回数だけ行うかどうか.
+        :return:
         """
-        for i in range(repeat):
+        for i in range(1, repeat + 1):
             self._e_step()
             self._m_step()
-            if self.is_terminated:
-                print("repeat ", i)
+            self.n_iter = i
+
+            if (~force_update) and self.is_terminated:
+                logger.info("objective is terminated")
                 return
         return
 
@@ -143,13 +155,13 @@ def generate_samples():
 
 if __name__ == '__main__':
     data = generate_samples()
-    em_alg = EMAlgorithm(3, data)
-    em_alg.run(repeat=100)
-    plt.scatter(data[:, 0], data[:, 1], s=40, c=em_alg.responsibility, alpha=.5, facecolors='none',
-                edgecolor=em_alg.responsibility)
+    model = EMAlgorithm(3, data)
+    model.run(repeat=100)
+    plt.scatter(data[:, 0], data[:, 1], s=40, c=model.responsibility, alpha=.5, facecolors='none',
+                edgecolor=model.responsibility)
     # plt.plot(np.array(em_alg.nu_list)[:, 0], np.array(em_alg.nu_list)[:, 1], "rh", markersize=10)
-    path = np.array(em_alg.nu_path)
-    for k in range(em_alg.class_num):
+    path = np.array(model.nu_path)
+    for k in range(model.class_num):
         c = [0, 0, 0]
         c[k] = 1
         plt.plot(path[:, k, 0], path[:, k, 1], "*-", color=c, label="class{k} center".format(**locals()))

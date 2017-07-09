@@ -105,22 +105,23 @@ if __name__ == '__main__':
     plt.plot(np.linspace(-1, 1, 100), true_function(np.linspace(-1, 1, 100) * np.pi), "--", label='True Function',
              color="C0")
     plt.legend(loc=2)
+    plt.title("training data")
 
     # training data の保存
     # plt.savefig('True_function_and_training_data.png', dpi=150)
     plt.show()
 
-    g_pro = GaussianProcess(beta=.1)
+    model = GaussianProcess(beta=.1)
     samples_split = [1, 4, 8, 16, 32]
     plt.figure(figsize=(len(samples_split) * 3, 4))
     for i, sample_num in enumerate(samples_split):
         x = train_dataset[0][:sample_num]
         t = train_dataset[1][:sample_num]
-        g_pro.fit(x, t)
+        model.fit(x, t)
         Xs = np.linspace(-1, 1, 100)
         pred_t = []
         for xx in Xs:
-            pred_t.append(g_pro.predict(xx))
+            pred_t.append(model.predict(xx))
         pred_t = np.array(pred_t)
 
         plt.subplot(1, len(samples_split), i + 1)
@@ -137,5 +138,5 @@ if __name__ == '__main__':
             plt.legend()
 
     plt.tight_layout()
-    plt.savefig('gp_by_training_data.png', dpi=150)
+    plt.savefig('../figures/gp-estimation_by_training_data.png', dpi=150)
     plt.show()

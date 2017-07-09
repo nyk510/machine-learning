@@ -98,22 +98,21 @@ def compute_polynominal_matrix(X, dimensions):
 
 def compute_gaussian_phi(X, dim=10, s=1.):
     """
-    ガウス基底に基づく特徴量matrixを返します
-    固定基底なので、データ点によらず、-pi~+piまでを、dimの数で区切ってその点との距離をガウス基底で計算します。
-        ここがRBFと異なる点. 
-        RVM (Relevant Vector Machin) や、ガウス過程では、固定基底を通さずに内積のみを計算する. 
-    X: numpy.ndarray 元になるxの値
-    dim: ガウス基底の次元数
-    s: ガウス基底の分散パラメータ
+    ガウス固定基底に基づく特徴量matrixを返します.
+    固定規定の基準点は [-pi, pi] を dim の数で区切った点.
+    :param np.ndarray X:
+        変換する特徴量. shape = (n_samples, )
+
+    :param int dim: ガウス基底の次元数
+    :param float s: ガウス基底の分散パラメータ
         大きいと分布がゆるやかになります
         要するに、予測分布が遠いデータ点の情報も参照する用になります
     """
-    Phi = [np.ones_like(X)]
-    start = -np.pi
-    dist = 2. * np.pi
-    for i in range(dim):
-        Phi.append(np.exp(-(X - start - dist / (dim - 1) * i) ** 2 / (2. * s * s)))
-    return np.array(Phi).T
+    bins = np.linspace(-np.pi, np.pi, num=dim).reshape(1, -1)
+    X = X.reshape(-1, 1)
+    dist = X - bins
+    phi = np.exp(- dist ** 2. / (2 * s ** 2.))
+    return np.hstack((phi, np.ones_like(X)))
 
 
 if __name__ == '__main__':

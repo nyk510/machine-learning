@@ -5,11 +5,7 @@ __author__ = "nyk510"
 """
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 import pandas as pd
-
-sns.set(context="notebook", style="white")
-sns.set_palette(sns.color_palette(palette="Set1")[:])
 
 np.random.seed(71)
 
@@ -30,7 +26,7 @@ def plot_target_function(x, ax=None, color="default"):
     if ax is None:
         ax = plt.subplot(111)
     if color is "default":
-        color = sns.color_palette()[0]
+        color = "C0"
     ax.plot(x, t_func(x), "--", label="true function", color=color, alpha=.5)
     return ax
 
@@ -106,13 +102,13 @@ def fit(phi_func, x, update_beta=False):
     a0, b0 = 1, 1
     c0, d0 = 1, 1
 
-    pred_color = sns.color_palette()[1]
+    pred_color = "C1"
 
-    freq = 5
+    freq = 2
     n_iter = 3 * freq
     n_fig = int(n_iter / freq)
 
-    fig = plt.figure(figsize=(4 * n_fig, 6))
+    fig = plt.figure(figsize=(3 * n_fig, 4))
     data_iter = []
     data_iter.append([alpha, beta])
 
@@ -140,13 +136,13 @@ def fit(phi_func, x, update_beta=False):
 
             m_line = Phi_xx.dot(mn)
             sigma = (1. / beta + np.diag(Phi_xx.dot(Sn).dot(Phi_xx.T))) ** .5
-            ax_i.plot(xx, m_line, "-", label="predict-line",
-                      alpha=0.8, color=pred_color)
-            ax_i.fill_between(xx, m_line + sigma, m_line - sigma, label="+1sigma", alpha=.1, color=pred_color)
+            ax_i.plot(xx, m_line, "-", label="predict-line", color=pred_color)
+            ax_i.fill_between(xx, m_line + sigma, m_line - sigma, label="Predict 1 sigma", alpha=.2, color=pred_color)
             ax_i.set_title(
                 "n_iter:{i} alpha:{alpha:.3g} beta:{beta:.3g}".format(**locals()))
             ax_i.set_ylim(-2, 2)
             ax_i.set_xlim(-1.5, 1.5)
+        if i == 0:
             ax_i.legend(loc=4)
 
     fig.tight_layout()
@@ -154,12 +150,12 @@ def fit(phi_func, x, update_beta=False):
 
 
 if __name__ == "__main__":
-    n_samples = 50
+    n_samples = 20
     x = np.random.uniform(-1, 1, n_samples)
     noise = np.random.normal(scale=1., size=n_samples)
     t = t_func(x) + noise
 
-    plt.figure(figsize=(4, 6))
+    plt.figure(figsize=(4, 4))
     xx = np.linspace(-1, 1., 100)
     plot_target_function(xx)
     plt.plot(x, t, "o", label="data")
