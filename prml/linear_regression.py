@@ -8,7 +8,7 @@ __author__ = "nyk510"
 
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.stats as stats  # multivariate_normal
+import scipy.stats as stats
 
 
 class LinearRegression(object):
@@ -19,10 +19,9 @@ class LinearRegression(object):
 
     def __init__(self, alpha=.001, beta=1., repeat_num=10):
         """
-        初期化を行います
-        alpha_list: alpha格納用リスト。alphaはN(w|o,1/alpha*I)で表される精度パラメータ
-        beta_list: beta格納用リスト。betaはモデルN(t|w^T*phi(x),1/beta)での精度パラメータ
-        repeat_num: fitを行う際の繰り返し回数
+        :param alpha_list: alpha格納用リスト。alphaはN(w|o,1/alpha*I)で表される精度パラメータ
+        :param beta_list: beta格納用リスト。betaはモデルN(t|w^T*phi(x),1/beta)での精度パラメータ
+        :param repeat_num: fitを行う際の繰り返し回数
         """
         self.init_alpha = alpha
         self.init_beta = beta
@@ -30,22 +29,23 @@ class LinearRegression(object):
 
     def fit(self, Phi, t):
         """
-        Xとtからパラメータwを推定します
+        Xとtからパラメータwを推定
+        :param array-like Phi
+            training data, shape = (n_samples, n_features)
+        :param array-like t:
+            labels for Phi, shape = (n_samples, ) 
+        :return self
+        :rtype: LinearRegression
         """
+
         t = np.array(t)
         N = len(t)
         dim_w = len(Phi[0])
-        print
-        N, ": data dimention"
-        print
-        dim_w, ": w dimention"
-        # 計画行列の固有値計算を先にしておきます
+        # 計画行列の固有値計算を先にしておく
         self.eigenvalues = np.linalg.eig(Phi.T.dot(Phi))[0]
         self.eigenvalues[np.abs(self.eigenvalues) < .0001] = 0.  # 情報量が小さい次元の固有値はすべて0だと思うことにする。
-        print
-        u"Eig", self.eigenvalues
         # alphaとbetaを格納する為のリストを用意
-        # note:最初はpythonのリストで計算してあとでnumpy.arrayにしたほうが早い！
+        # note:最初はpythonのリストで計算してあとでnumpy.arrayにしたほうが np.append とかよりも早い
         alphas = []
         betas = []
         w = []
@@ -73,24 +73,25 @@ class LinearRegression(object):
         self.beta_list = np.array(betas)
         self.w = np.array(w)
         self.gam = np.array(gammas)
-        return
+        return self
 
     def predict(self, x):
         """
-        input x: ndarray like. shape = (N,M)
-        return ndarray. shape = (N,)
+        :param np.ndarray x:
+        :rtype np.ndarray
         """
         return x.dot(self.w)
 
 
-def compute_polynominal_matrix(X, dimentions):
+def compute_polynominal_matrix(X, dimensions):
     """
     単純な多項式による特徴量を返します
     X: numpy.ndarray like
-    return: Phi 特徴量ベクトル numpy.ndarray. len(X)*dimentions 行列
+    return: Phi 特徴量ベクトル numpy.ndarray. len(X)*dimensions 行列
+    :type dimensions: object
     """
     Phi = [np.ones_like(X)]
-    for i in range(dimentions - 1):
+    for i in range(dimensions - 1):
         Phi.append(Phi[-1] * X)
     return np.array(Phi).T
 
@@ -111,8 +112,6 @@ def compute_gaussian_phi(X, dim=10, s=1.):
     start = -np.pi
     dist = 2. * np.pi
     for i in range(dim):
-        print
-        X - start - dist / (dim - 1)
         Phi.append(np.exp(-(X - start - dist / (dim - 1) * i) ** 2 / (2. * s * s)))
     return np.array(Phi).T
 
@@ -131,7 +130,7 @@ if __name__ == '__main__':
     # plt.plot(np.linspace(-np.pi,np.pi,200),np.sin(np.linspace(-np.pi,np.pi,200)),"-",label="True Target(No Noize)")
     # plt.show()
 
-    Phi = compute_polynominal_matrix(X, dimentions=phi_dim)
+    Phi = compute_polynominal_matrix(X, dimensions=phi_dim)
     Phi = compute_gaussian_phi(X, dim=phi_dim, s=1.)
 
     model = LinearRegression(alpha=1e-5, beta=10., )
@@ -162,19 +161,3 @@ if __name__ == '__main__':
     fig1.tight_layout()
     fig1.savefig("../figures/linear_regression_max-evidence_vs_normal-map.png", dpi=150)
     plt.show()
-
-        # # 係数wの大きさの変化を表示する
-        # # ax3 = axes[0,1]
-        # # for i in range(len(model.w[0])):
-        # #     ax3.plot(range(len(model.w[:,i])),np.abs(model.w[:,i]),"o-",alpha=.3)
-        # sns.heatmap(model.w, ax=axes[0, 1])
-        # axes[0, 1].set_ylabel('Iteration')
-        # axes[0, 1].set_xlabel('dimention')
-        # # Gammaの推移をプロットします
-        # ax4 = axes[1, 1]
-        # ax4.plot(range(len(model.gam)), model.gam, "-o", label="Gamma")
-        # ax4.set_xlabel('Iteration')
-        # ax4.legend(loc=1)
-        # plt.tight_layout()
-        # # plt.savefig('python_study/prml/linear_regression/normalmap_and_evidence.png', dpi=120)
-        # plt.show()
