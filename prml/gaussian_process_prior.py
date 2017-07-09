@@ -46,7 +46,7 @@ class Kernel(object):
 
 if __name__ == '__main__':
 
-    kernel1 = Kernel(1, 4., 10., 0., kernel_type="ornstein")
+    kernel1 = Kernel(1, 10., 1., 0., kernel_type="gaussian")
     num_of_spans = 200  # 離散化する数 増やせばなめらかさは増しますが、計算コストも増えます。
 
     gram_matrix = np.identity(num_of_spans)
@@ -56,9 +56,10 @@ if __name__ == '__main__':
             x1 = x_range[i]
             x2 = x_range[k]
             gram_matrix[i][k] = kernel1(np.array([x1]), np.array([x2]))
-    color = ["C{i}".format(**locals()) for i in range(4)]
+    color = ["C{i}".format(**locals()) for i in range(3)]
     for i in range(10):
         y = np.random.multivariate_normal(np.zeros(num_of_spans), gram_matrix, 1)
         plt.plot(x_range, y[0], color[i % len(color)])
     plt.title(str(kernel1))
+    plt.savefig("../figures/gp_prior.png", dpi=150)
     plt.show()

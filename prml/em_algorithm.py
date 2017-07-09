@@ -166,4 +166,5 @@ if __name__ == '__main__':
         c[k] = 1
         plt.plot(path[:, k, 0], path[:, k, 1], "*-", color=c, label="class{k} center".format(**locals()))
     plt.legend()
+    plt.savefig("../figures/em_algorithm.png", dpi=150)
     plt.show()
