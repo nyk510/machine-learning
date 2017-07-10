@@ -64,17 +64,16 @@ if __name__ == '__main__':
     average_eigs = np.average(eig_values)
     sample = gibbs_sampling(nu, covariance, 1000)
 
-    fig, ax1 = plt.subplots(figsize=(8, 8))
+    fig, ax1 = plt.subplots(figsize=(6, 6))
     ax1.scatter(sample[:, 0], sample[:, 1],
-                marker="o", alpha=1., s=30.,
-                facecolors='none', edgecolor="C0", label="Samples"
+                marker="o", facecolor="none", alpha=1., s=30., edgecolor="C0", label="Samples"
                 )
 
     # 答え合わせ
     # scipy.stats を用いて多次元ガウス分布の確率密度関数を計算
     multi_norm = stats.multivariate_normal(mean=nu, cov=covariance)
-    X, Y = np.meshgrid(np.linspace(nu[0] - average_eigs * 2, nu[0] + average_eigs * 2, 100),
-                       np.linspace(nu[1] - average_eigs * 2, nu[1] + average_eigs * 2, 100))
+    X, Y = np.meshgrid(np.linspace(nu[0] - average_eigs * 2, nu[0] + average_eigs * 2, 1000),
+                       np.linspace(nu[1] - average_eigs * 2, nu[1] + average_eigs * 2, 1000))
     Pos = np.empty(X.shape + (2,))
     Pos[:, :, 0] = X
     Pos[:, :, 1] = Y
@@ -83,4 +82,4 @@ if __name__ == '__main__':
     ax1.legend()
     ax1.set_title("Gibbs Sampling")
     fig.tight_layout()
-    fig.savefig("gibbs_sampling.png", dpi=150)
+    fig.savefig("figures/gibbs_sampling.png", dpi=150)
